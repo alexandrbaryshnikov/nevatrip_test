@@ -63,6 +63,7 @@ function createOrder($event_id, $event_date, $ticket_adult_price, $ticket_adult_
     $barcode = createBarcode($mysqli, $table);
 
     $curl = curl_init();
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
     curl_setopt_array($curl, array(
         CURLOPT_URL => 'https://api.site.com/book',
         CURLOPT_POST => true,
@@ -79,9 +80,10 @@ function createOrder($event_id, $event_date, $ticket_adult_price, $ticket_adult_
     $response = curl_exec($curl);
     curl_close($curl);
 
-    if($response === true){
+    if($response === "message: 'order successfully booked'"){
 
         $curl = curl_init();
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt_array($curl, array(
             CURLOPT_URL => 'https://api.site.com/approve',
             CURLOPT_POST => true,
@@ -90,7 +92,7 @@ function createOrder($event_id, $event_date, $ticket_adult_price, $ticket_adult_
         $response = curl_exec($curl);
         curl_close($curl);
 
-        if($response === true){
+        if($response === "message: 'order successfully approved'"){
 
             $query = "INSERT INTO $table (
                      event_id,
